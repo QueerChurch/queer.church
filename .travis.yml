@@ -1,0 +1,14 @@
+language: node_js
+node_js: node
+script: ./node_modules/.bin/eslint app.js
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: "$ACCESS_KEY_ID"
+  secret_access_key: "$SECRET_ACCESS_KEY"
+  region: us-west-2
+  app: queer.church
+  env: queerchurch
+  bucket_name: elasticbeanstalk-us-west-2-617580300246
+  on:
+    branch: master
+    repo: arichiv/queer.church

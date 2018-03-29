@@ -1,0 +1,12 @@
+{
+  "name": "queer.church",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "eslint-config-google": "latest"
+  }
+}
