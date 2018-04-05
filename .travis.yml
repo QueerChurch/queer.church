@@ -1,14 +1,12 @@
-language: node_js
-node_js: node
-script: ./node_modules/.bin/eslint app.js
+script: echo "SKIPPED"
 deploy:
-  provider: elasticbeanstalk
-  access_key_id: "$ACCESS_KEY_ID"
-  secret_access_key: "$SECRET_ACCESS_KEY"
-  region: us-west-2
-  app: queer.church
-  env: queerchurch
-  bucket_name: elasticbeanstalk-us-west-2-617580300246
-  on:
-    branch: master
-    repo: arichiv/queer.church
+  - provider: s3
+    access_key_id: $ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: queer.church
+    region: us-west-2
+    local_dir: static
+    acl: public_read
+    on:
+      branch: master
+      repo: arichiv/queer.church
