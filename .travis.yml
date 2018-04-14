@@ -9,4 +9,4 @@ deploy:
     acl: public_read
     on:
       branch: master
-      repo: arichiv/queer.church
+      repo: QueerChurch/queer.church
