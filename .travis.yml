@@ -1,12 +1,9 @@
-script: echo "SKIPPED"
+script: skip
 deploy:
   - provider: s3
-    access_key_id: $ACCESS_KEY_ID
-    secret_access_key: $SECRET_ACCESS_KEY
     bucket: queer.church
     region: us-west-2
     local_dir: static
     acl: public_read
     on:
       branch: master
-      repo: QueerChurch/queer.church
