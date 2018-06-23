@@ -1,24 +1,33 @@
 locals {
   domain = "queer.church"
-  index  = "index.html"
   name   = "queerchurch"
-  region = "us-west-2"
 }
 
-provider "aws" {}
+provider "aws" {
+  region = "us-east-1"
+}
 
 resource "aws_s3_bucket" "qc_bucket" {
   bucket        = "${local.domain}"
   force_destroy = true
-  region        = "${local.region}"
 
   tags {
     Name = "${local.name}"
   }
 
   website {
-    index_document = "${local.index}"
-    error_document = "${local.index}"
+    index_document = "index.html"
+    error_document = "index.html"
+  }
+}
+
+resource "aws_acm_certificate" "qc_certificate" {
+  domain_name               = "${local.domain}"
+  subject_alternative_names = ["*.${local.domain}"]
+  validation_method         = "DNS"
+
+  tags {
+    Name = "${local.name}"
   }
 }
 
@@ -40,13 +49,13 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
       query_string = "false"
     }
 
-    target_origin_id       = "S3-${local.domain}"
+    target_origin_id       = "${local.domain}"
     viewer_protocol_policy = "redirect-to-https"
   }
 
   origin {
-    domain_name = "${local.domain}.s3-website-${local.region}.amazonaws.com"
-    origin_id   = "S3-${local.domain}"
+    domain_name = "${aws_s3_bucket.qc_bucket.website_domain}"
+    origin_id   = "${local.domain}"
 
     custom_origin_config {
       http_port              = 80
@@ -67,8 +76,7 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = "arn:aws:acm:us-east-1:617580300246:certificate/889edd32-6b77-4229-91b4-15153575bd26"
-    ssl_support_method  = "sni-only"
+    acm_certificate_arn = "${aws_acm_certificate.qc_certificate.arn}"
   }
 }
 
@@ -80,7 +88,7 @@ resource "aws_route53_zone" "qc_zone" {
   }
 }
 
-resource "aws_route53_record" "qc_record_a" {
+resource "aws_route53_record" "qc_record_root" {
   name    = "${local.domain}."
   type    = "A"
   zone_id = "${aws_route53_zone.qc_zone.zone_id}"
@@ -92,7 +100,7 @@ resource "aws_route53_record" "qc_record_a" {
   }
 }
 
-resource "aws_route53_record" "qc_record_a_star" {
+resource "aws_route53_record" "qc_record_wild" {
   name    = "*.${local.domain}."
   type    = "A"
   zone_id = "${aws_route53_zone.qc_zone.zone_id}"
@@ -102,4 +110,17 @@ resource "aws_route53_record" "qc_record_a_star" {
     name                   = "${aws_cloudfront_distribution.qc_distribution.domain_name}"
     zone_id                = "${aws_cloudfront_distribution.qc_distribution.hosted_zone_id}"
   }
+}
+
+resource "aws_route53_record" "qc_record_validation" {
+  name    = "${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_name}"
+  records = ["${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_value}"]
+  ttl     = 60
+  type    = "${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_type}"
+  zone_id = "${aws_route53_zone.qc_zone.zone_id}"
+}
+
+resource "aws_acm_certificate_validation" "qc_validation" {
+  certificate_arn         = "${aws_acm_certificate.qc_certificate.arn}"
+  validation_record_fqdns = ["${aws_route53_record.qc_record_validation.fqdn}"]
 }
