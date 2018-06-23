@@ -4,7 +4,7 @@ jobs:
   - stage: Lint
     if: ( branch != master ) AND (type = push)
     script:
-    - apt-get install tidy
+    - sudo apt-get install tidy
     - tidy static/index.html || true
   - stage: Deploy
     if: ( branch = master ) AND (type = push)
@@ -18,6 +18,10 @@ jobs:
   - stage: Actualize
     if: type = api
     script:
+    - sudo apt-get install unzip
+    - wget https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
+    - unzip terraform_0.11.7_linux_amd64.zip
+    - sudo mv terraform /usr/local/bin/
     - cd terraform && terraform apply -auto-approve
     - git remote add target "https://arichiv:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
     - git add -A
