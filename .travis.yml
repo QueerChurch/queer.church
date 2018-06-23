@@ -2,7 +2,7 @@ script: skip
 deploy:
   - provider: s3
     bucket: queer.church
-    region: us-west-2
+    region: us-east-1
     local_dir: static
     acl: public_read
     on:

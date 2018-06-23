@@ -3,9 +3,7 @@ locals {
   name   = "queerchurch"
 }
 
-provider "aws" {
-  region = "us-east-1"
-}
+provider "aws" {}
 
 resource "aws_s3_bucket" "qc_bucket" {
   bucket        = "${local.domain}"
