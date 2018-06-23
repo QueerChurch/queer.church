@@ -52,7 +52,7 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
   }
 
   origin {
-    domain_name = "${aws_s3_bucket.qc_bucket.website_domain}"
+    domain_name = "${aws_s3_bucket.qc_bucket.website_endpoint}"
     origin_id   = "${local.domain}"
 
     custom_origin_config {
