@@ -5,8 +5,8 @@ jobs:
     if: branch = master
     script: skip
     deploy:
-      - provider: s3
-        bucket: queer.church
-        region: us-east-1
-        local_dir: static
-        acl: public_read
+      provider: s3
+      bucket: queer.church
+      region: us-east-1
+      local_dir: static
+      acl: public_read
