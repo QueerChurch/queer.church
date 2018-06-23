@@ -112,7 +112,7 @@ resource "aws_route53_record" "qc_record_wild" {
 }
 
 resource "aws_route53_record" "qc_record_validation" {
-  count   = "${length(aws_acm_certificate.qc_certificate.domain_validation_option)}"
+  count   = "${length(aws_acm_certificate.qc_certificate.domain_validation_options)}"
   name    = "${element(aws_acm_certificate.qc_certificate.domain_validation_options.*.resource_record_name, count.index)}"
   records = ["${element(aws_acm_certificate.qc_certificate.domain_validation_options.*.resource_record_value, count.index)}"]
   ttl     = 60
