@@ -24,8 +24,8 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
     compress        = false
     default_ttl     = 0
 
-    forwarded_values = {
-      cookies = {
+    forwarded_values {
+      cookies {
         forward = "none"
       }
 
@@ -48,13 +48,13 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
     }
   }
 
-  restrictions = {
-    geo_restriction = {
+  restrictions {
+    geo_restriction {
       restriction_type = "none"
     }
   }
 
-  viewer_certificate = {
+  viewer_certificate {
     acm_certificate_arn = "arn:aws:acm:us-east-1:617580300246:certificate/889edd32-6b77-4229-91b4-15153575bd26"
     ssl_support_method  = "sni-only"
   }
