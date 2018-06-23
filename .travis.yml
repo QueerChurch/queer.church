@@ -1,6 +1,11 @@
 script: skip
 jobs:
   include:
+  - stage: Lint
+    if: ( branch != master ) AND (type = push)
+    script:
+    - sudo apt install tidy
+    - tidy static/index.html
   - stage: Deploy
     if: ( branch = master ) AND (type = push)
     script: skip
