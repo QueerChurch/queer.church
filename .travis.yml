@@ -4,8 +4,8 @@ jobs:
   - stage: Lint
     if: ( branch != master ) AND (type = push)
     script:
-    - sudo apt install tidy
-    - tidy static/index.html
+    - apt-get install tidy
+    - tidy static/index.html || true
   - stage: Deploy
     if: ( branch = master ) AND (type = push)
     script: skip
