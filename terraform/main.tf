@@ -1,21 +1,29 @@
+locals {
+  domain = "queer.church"
+  index  = "index.html"
+  name   = "queerchurch"
+  region = "us-west-2"
+}
+
 provider "aws" {}
 
 resource "aws_s3_bucket" "qc_bucket" {
-  bucket        = "queer.church"
+  bucket        = "${local.domain}"
   force_destroy = true
+  region        = "${local.region}"
 
   tags {
-    Name = "queerchurch"
+    Name = "${local.name}"
   }
 
   website {
-    index_document = "index.html"
-    error_document = "index.html"
+    index_document = "${local.index}"
+    error_document = "${local.index}"
   }
 }
 
 resource "aws_cloudfront_distribution" "qc_distribution" {
-  aliases = ["*.queer.church", "queer.church"]
+  aliases = ["*.${local.domain}", "${local.domain}"]
   enabled = true
 
   default_cache_behavior {
@@ -32,13 +40,13 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
       query_string = "false"
     }
 
-    target_origin_id       = "S3-queer.church"
+    target_origin_id       = "S3-${local.domain}"
     viewer_protocol_policy = "redirect-to-https"
   }
 
   origin {
-    domain_name = "queer.church.s3-website-us-west-2.amazonaws.com"
-    origin_id   = "S3-queer.church"
+    domain_name = "${local.domain}.s3-website-${local.region}.amazonaws.com"
+    origin_id   = "S3-${local.domain}"
 
     custom_origin_config {
       http_port              = 80
@@ -52,6 +60,10 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
     geo_restriction {
       restriction_type = "none"
     }
+  }
+
+  tags {
+    Name = "${local.name}"
   }
 
   viewer_certificate {
