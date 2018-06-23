@@ -2,7 +2,7 @@ script: skip
 jobs:
   include:
   - stage: Deploy
-    if: branch = master
+    if: ( branch = master ) AND (type = push)
     script: skip
     deploy:
       provider: s3
@@ -10,3 +10,11 @@ jobs:
       region: us-east-1
       local_dir: static
       acl: public_read
+  - stage: Actualize
+    if: type = api
+    script:
+    - cd terraform && terraform apply -auto-approve
+    - git remote add target "https://arichiv:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
+    - git add -A
+    - git commit -m "ACTUALIZE ${TRAVIS_BUILD_NUMBER}"
+    - git push target HEAD:$TRAVIS_BRANCH
