@@ -112,10 +112,11 @@ resource "aws_route53_record" "qc_record_wild" {
 }
 
 resource "aws_route53_record" "qc_record_validation" {
-  name    = "${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_name}"
-  records = ["${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_value}"]
+  count   = "${length(aws_acm_certificate.qc_certificate.domain_validation_option)}"
+  name    = "${aws_acm_certificate.qc_certificate.domain_validation_options[count.index].resource_record_name}"
+  records = ["${aws_acm_certificate.qc_certificate.domain_validation_options[count.index].resource_record_value}"]
   ttl     = 60
-  type    = "${aws_acm_certificate.qc_certificate.domain_validation_options.0.resource_record_type}"
+  type    = "${aws_acm_certificate.qc_certificate.domain_validation_options[count.index].resource_record_type}"
   zone_id = "${aws_route53_zone.qc_zone.zone_id}"
 }
 
