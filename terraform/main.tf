@@ -79,3 +79,27 @@ resource "aws_route53_zone" "qc_zone" {
     Name = "${local.name}"
   }
 }
+
+resource "aws_route53_record" "qc_record_a" {
+  name    = "${local.domain}."
+  type    = "A"
+  zone_id = "${aws_route53_zone.qc_zone.zone_id}"
+
+  alias {
+    evaluate_target_health = false
+    name                   = "${aws_cloudfront_distribution.qc_distribution.domain_name}"
+    zone_id                = "${aws_cloudfront_distribution.qc_distribution.hosted_zone_id}"
+  }
+}
+
+resource "aws_route53_record" "qc_record_a_star" {
+  name    = "*.${local.domain}."
+  type    = "A"
+  zone_id = "${aws_route53_zone.qc_zone.zone_id}"
+
+  alias {
+    evaluate_target_health = false
+    name                   = "${aws_cloudfront_distribution.qc_distribution.domain_name}"
+    zone_id                = "${aws_cloudfront_distribution.qc_distribution.hosted_zone_id}"
+  }
+}
