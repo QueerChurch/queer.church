@@ -71,3 +71,11 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
     ssl_support_method  = "sni-only"
   }
 }
+
+resource "aws_route53_zone" "qc_zone" {
+  name = "${local.domain}."
+
+  tags {
+    Name = "${local.name}"
+  }
+}
