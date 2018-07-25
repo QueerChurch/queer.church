@@ -25,27 +25,33 @@ resource "aws_s3_bucket" "qc_bucket" {
 locals {
   files = [
     {
-      file = "static/index.html"
+      local = "static/index.html"
+      remote = "index.html"
       type = "text/html"
     },
     {
-      file = "static/cover_0.png"
+      local = "static/cover_0.png"
+      remote = "cover_0.png"
       type = "image/png"
     },
     {
-      file = "static/cover_1.png"
+      local = "static/cover_1.png"
+      remote = "cover_1.png"
       type = "image/png"
     },
     {
-      file = "static/cover_2.png"
+      local = "static/cover_2.png"
+      remote = "cover_2.png"
       type = "image/png"
     },
     {
-      file = "static/logo-01.png"
+      local = "static/logo-01.png"
+      remote = "logo-01.png"
       type = "image/png"
     },
     {
-      file = "static/logo-02.png"
+      local = "static/logo-02.png"
+      remote = "logo-02.png"
       type = "image/png"
     }
   ]
@@ -54,11 +60,11 @@ locals {
 resource "aws_s3_bucket_object" "ob_object" {
   count = "${length(local.files)}"
   bucket = "${var.DOMAIN}"
-  key = "${lookup(local.files[count.index], "file")}"
-  source = "${lookup(local.files[count.index], "file")}"
+  key = "${lookup(local.files[count.index], "remote")}"
+  source = "${lookup(local.files[count.index], "local")}"
   acl = "public-read"
   content_type = "${lookup(local.files[count.index], "type")}"
-  etag = "${md5(file("${lookup(local.files[count.index], "file")}"))}"
+  etag = "${md5(file("${lookup(local.files[count.index], "local")}"))}"
 }
 
 resource "aws_acm_certificate" "qc_certificate" {
