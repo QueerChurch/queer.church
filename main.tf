@@ -29,23 +29,23 @@ locals {
       type = "text/html"
     },
     {
-      file = "cover_0.png"
+      file = "static/cover_0.png"
       type = "image/png"
     },
     {
-      file = "cover_1.png"
+      file = "static/cover_1.png"
       type = "image/png"
     },
     {
-      file = "cover_2.png"
+      file = "static/cover_2.png"
       type = "image/png"
     },
     {
-      file = "logo-00.png"
+      file = "static/logo-00.png"
       type = "image/png"
     },
     {
-      file = "logo-01.png"
+      file = "static/logo-01.png"
       type = "image/png"
     }
   ]
