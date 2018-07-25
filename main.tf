@@ -1,16 +1,19 @@
-locals {
-  domain = "queer.church"
-  name   = "queerchurch"
+terraform {
+  backend "s3" {}
 }
+
+variable "DOMAIN" {}
+
+variable "NAME" {}
 
 provider "aws" {}
 
 resource "aws_s3_bucket" "qc_bucket" {
-  bucket        = "${local.domain}"
+  bucket        = "${var.DOMAIN}"
   force_destroy = true
 
   tags {
-    Name = "${local.name}"
+    Name = "${var.NAME}"
   }
 
   website {
@@ -20,17 +23,17 @@ resource "aws_s3_bucket" "qc_bucket" {
 }
 
 resource "aws_acm_certificate" "qc_certificate" {
-  domain_name               = "${local.domain}"
-  subject_alternative_names = [ "*.${local.domain}" ]
+  domain_name               = "${var.DOMAIN}"
+  subject_alternative_names = [ "*.${var.DOMAIN}" ]
   validation_method         = "DNS"
 
   tags {
-    Name = "${local.name}"
+    Name = "${var.NAME}"
   }
 }
 
 resource "aws_cloudfront_distribution" "qc_distribution" {
-  aliases = [ "*.${local.domain}", "${local.domain}" ]
+  aliases = [ "*.${var.DOMAIN}", "${var.DOMAIN}" ]
   enabled = true
 
   default_cache_behavior {
@@ -47,13 +50,13 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
       query_string = "false"
     }
 
-    target_origin_id       = "${local.domain}"
+    target_origin_id       = "${var.DOMAIN}"
     viewer_protocol_policy = "redirect-to-https"
   }
 
   origin {
     domain_name = "${aws_s3_bucket.qc_bucket.website_endpoint}"
-    origin_id   = "${local.domain}"
+    origin_id   = "${var.DOMAIN}"
 
     custom_origin_config {
       http_port              = 80
@@ -70,7 +73,7 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
   }
 
   tags {
-    Name = "${local.name}"
+    Name = "${var.NAME}"
   }
 
   viewer_certificate {
@@ -80,15 +83,15 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
 }
 
 resource "aws_route53_zone" "qc_zone" {
-  name = "${local.domain}."
+  name = "${var.DOMAIN}."
 
   tags {
-    Name = "${local.name}"
+    Name = "${var.NAME}"
   }
 }
 
 resource "aws_route53_record" "qc_record_root" {
-  name    = "${local.domain}."
+  name    = "${var.DOMAIN}."
   type    = "A"
   zone_id = "${aws_route53_zone.qc_zone.zone_id}"
 
@@ -100,7 +103,7 @@ resource "aws_route53_record" "qc_record_root" {
 }
 
 resource "aws_route53_record" "qc_record_wild" {
-  name    = "*.${local.domain}."
+  name    = "*.${var.DOMAIN}."
   type    = "A"
   zone_id = "${aws_route53_zone.qc_zone.zone_id}"
 
