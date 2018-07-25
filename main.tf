@@ -41,11 +41,11 @@ locals {
       type = "image/png"
     },
     {
-      file = "static/logo-00.png"
+      file = "static/logo-01.png"
       type = "image/png"
     },
     {
-      file = "static/logo-01.png"
+      file = "static/logo-02.png"
       type = "image/png"
     }
   ]
