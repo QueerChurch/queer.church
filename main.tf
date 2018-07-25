@@ -22,6 +22,45 @@ resource "aws_s3_bucket" "qc_bucket" {
   }
 }
 
+locals {
+  files = [
+    {
+      file = "static/index.html"
+      type = "text/html"
+    },
+    {
+      file = "cover_0.png"
+      type = "image/png"
+    },
+    {
+      file = "cover_1.png"
+      type = "image/png"
+    },
+    {
+      file = "cover_2.png"
+      type = "image/png"
+    },
+    {
+      file = "logo-00.png"
+      type = "image/png"
+    },
+    {
+      file = "logo-01.png"
+      type = "image/png"
+    }
+  ]
+}
+
+resource "aws_s3_bucket_object" "ob_object" {
+  count = "${length(local.files)}"
+  bucket = "${var.DOMAIN}"
+  key = "${lookup(local.files[count.index], "file")}"
+  source = "${lookup(local.files[count.index], "file")}"
+  acl = "public-read"
+  content_type = "${lookup(local.files[count.index], "type")}"
+  etag = "${md5(file("${lookup(local.files[count.index], "file")}"))}"
+}
+
 resource "aws_acm_certificate" "qc_certificate" {
   domain_name               = "${var.DOMAIN}"
   subject_alternative_names = [ "*.${var.DOMAIN}" ]
