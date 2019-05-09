@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "qc_bucket" {
   bucket        = "${var.DOMAIN}"
   force_destroy = true
 
-  tags {
+  tags = {
     Name = "${var.NAME}"
   }
 
@@ -64,7 +64,7 @@ resource "aws_s3_bucket_object" "ob_object" {
   source = "${lookup(local.files[count.index], "local")}"
   acl = "public-read"
   content_type = "${lookup(local.files[count.index], "type")}"
-  etag = "${md5(file("${lookup(local.files[count.index], "local")}"))}"
+  etag = "${filemd5("${lookup(local.files[count.index], "local")}")}"
 }
 
 resource "aws_acm_certificate" "qc_certificate" {
@@ -72,7 +72,7 @@ resource "aws_acm_certificate" "qc_certificate" {
   subject_alternative_names = [ "*.${var.DOMAIN}" ]
   validation_method         = "DNS"
 
-  tags {
+  tags = {
     Name = "${var.NAME}"
   }
 }
@@ -117,7 +117,7 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
     }
   }
 
-  tags {
+  tags = {
     Name = "${var.NAME}"
   }
 
@@ -130,7 +130,7 @@ resource "aws_cloudfront_distribution" "qc_distribution" {
 resource "aws_route53_zone" "qc_zone" {
   name = "${var.DOMAIN}."
 
-  tags {
+  tags = {
     Name = "${var.NAME}"
   }
 }
@@ -170,5 +170,5 @@ resource "aws_route53_record" "qc_record_validation" {
 
 resource "aws_acm_certificate_validation" "qc_validation" {
   certificate_arn         = "${aws_acm_certificate.qc_certificate.arn}"
-  validation_record_fqdns = ["${aws_route53_record.qc_record_validation.*.fqdn}"]
+  validation_record_fqdns = aws_route53_record.qc_record_validation.*.fqdn
 }
