@@ -2,9 +2,13 @@ terraform {
   backend "s3" {}
 }
 
-variable "DOMAIN" {}
+variable "DOMAIN" {
+  default = "queer.church"
+}
 
-variable "NAME" {}
+variable "NAME" {
+  default = "queerchurch"
+}
 
 provider "aws" {}
 
